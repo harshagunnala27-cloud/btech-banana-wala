@@ -1,333 +1,95 @@
 <!DOCTYPE html>
-<html lang="en" class="{{ 'dark-mode' if dark_mode else 'light-mode' }}">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BTech Banana Wala – Fruit Supermarket Billing</title>
+    <title>BTech Banana Wala</title>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-  <!-- DARK MODE -->
-  <div class="mode-toggle">
-    <form method="POST" action="/dark_mode" class="mode-form">
-      <label>
-        <input type="checkbox"
-               name="dark"
-               value="true"
-               onchange="this.form.submit()"
-               {% if dark_mode %}checked{% endif %}>
+<div class="container">
+
+    <div class="top-bar">
+        <h1>BTech Banana Wala 🍌</h1>
+
+        <a href="/logout">Logout</a>
+    </div>
+
+    <button onclick="toggleDarkMode()" class="dark-btn">
         Dark Mode
-      </label>
-    </form>
-  </div>
+    </button>
 
-  <!-- USER INFO -->
-  {% if session.get('user') %}
-    <p class="user-info">
-      Logged in as:
-      {{ session.user.username }} ({{ session.user.role }})
-    </p>
-  {% endif %}
+    <form method="POST">
 
-  <a href="/logout" class="btn-logout">Logout</a>
+        <div class="products">
 
-  <div class="container">
+            {% for code, item in products.items() %}
 
-    <h1 class="header">BTech Banana Wala</h1>
-    <p class="sub-header">
-      Fresh Fruits Supermarket Billing System – Version 2
-    </p>
+            <div class="card">
 
-    <!-- ERROR -->
-    {% if error %}
-      <div class="alert-error">
-        {{ error }}
-      </div>
-    {% endif %}
+                <h2>{{ item.name }}</h2>
 
-    <!-- BILL RECEIPT -->
-    {% if bill %}
-
-      <div class="receipt" id="print-bill">
-
-        <h2 class="receipt-title">BILL RECEIPT</h2>
-
-        <p><strong>Customer:</strong> {{ bill["name"] }}</p>
-        <p><strong>Mobile:</strong> {{ bill["contact"] }}</p>
-        <p><strong>Payment:</strong> {{ bill["payment_method"] }}</p>
-        <p><strong>Date & Time:</strong> {{ bill["timestamp"] }}</p>
-
-        <table class="bill-table">
-
-          <tr>
-            <th>Fruit</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-
-          {% for item in bill["items"] %}
-          <tr>
-            <td>{{ item["name"] }}</td>
-            <td>{{ item["quantity"] }}</td>
-            <td>₹{{ "%.2f"|format(item["price"]) }}</td>
-            <td>₹{{ "%.2f"|format(item["total"]) }}</td>
-          </tr>
-          {% endfor %}
-
-        </table>
-
-        <div class="bill-total">
-          <p>
-            <strong>Subtotal:</strong>
-            ₹{{ "%.2f"|format(bill["subtotal"]) }}
-          </p>
-
-          <p>
-            <strong>GST (18%):</strong>
-            ₹{{ "%.2f"|format(bill["gst"]) }}
-          </p>
-
-          <p>
-            <strong class="final">
-              Final Amount:
-              ₹{{ "%.2f"|format(bill["final_amount"]) }}
-            </strong>
-          </p>
-        </div>
-
-        <!-- PAYMENT STATUS -->
-        <div class="payment-simulation">
-
-          {% if bill["payment_method"] == "cash" %}
-            <p class="success">
-              <strong>✅ CASH – Payment successful.</strong>
-            </p>
-
-          {% elif bill["payment_method"] == "card" %}
-            <p class="success">
-              <strong>✅ CARD – Payment successful.</strong>
-            </p>
-
-          {% else %}
-            <p class="pending">
-              ⏱️
-              <strong>
-                UPI – Payment status:
-                {{ bill["payment_status"] }}
-              </strong>
-            </p>
-
-            <p>
-              Simulated: system will mark this as successful after a short delay.
-            </p>
-
-          {% endif %}
-
-        </div>
-
-        <p class="thank-you">
-          Thank you for shopping with BTech Banana Wala!
-        </p>
-
-      </div>
-
-      <div class="actions">
-        <button type="button"
-                onclick="window.print()"
-                class="btn-print">
-          Print Bill
-        </button>
-
-        <a href="/" class="btn-new">
-          New Bill
-        </a>
-      </div>
-
-    {% else %}
-
-      <!-- CART -->
-      <div class="cart-section">
-
-        <h3>🛒 Your Cart</h3>
-
-        {% if cart %}
-
-          <table class="cart-table">
-
-            <tr>
-              <th>Fruit</th>
-              <th>Qty</th>
-              <th>Price</th>
-              <th>Total</th>
-              <th>Action</th>
-            </tr>
-
-            {% for code, qty in cart.items() %}
-
-              {% if code in products %}
-
-                {% set p = products[code] %}
-                {% set total = p.price * qty %}
-
-                <tr>
-
-                  <td>{{ p.name }}</td>
-
-                  <td>{{ qty }}</td>
-
-                  <td>
-                    ₹{{ "%.2f"|format(p.price) }}
-                  </td>
-
-                  <td>
-                    ₹{{ "%.2f"|format(total) }}
-                  </td>
-
-                  <td>
-
-                    <form method="POST">
-
-                      <input type="hidden"
-                             name="_form_type"
-                             value="remove_from_cart">
-
-                      <input type="hidden"
-                             name="code"
-                             value="{{ code }}">
-
-                      <button type="submit"
-                              class="btn-remove">
-                        Remove
-                      </button>
-
-                    </form>
-
-                  </td>
-
-                </tr>
-
-              {% endif %}
-
-            {% endfor %}
-
-          </table>
-
-          <p class="cart-total">
-
-            <strong>Subtotal:</strong>
-            ₹{{ "%.2f"|format(subtotal) }}
-
-            |
-
-            <strong>GST (18%):</strong>
-            ₹{{ "%.2f"|format(gst) }}
-
-            |
-
-            <strong>Final:</strong>
-            ₹{{ "%.2f"|format(final_amount) }}
-
-          </p>
-
-        {% else %}
-
-          <p class="empty-cart">
-            Your cart is empty.
-          </p>
-
-        {% endif %}
-
-      </div>
-
-      <!-- MAIN FORM -->
-      <form method="POST">
-
-        <div class="section">
-
-          <h3>Customer Details</h3>
-
-          <input type="text"
-                 name="name"
-                 placeholder="Enter customer name"
-                 required>
-
-          <input type="text"
-                 name="contact"
-                 placeholder="Enter 10-digit mobile number"
-                 required
-                 minlength="10"
-                 maxlength="10">
-
-          <select name="payment_method" required>
-
-            <option value="cash">Cash</option>
-
-            <option value="card">Card</option>
-
-            <option value="upi">UPI</option>
-
-          </select>
-
-        </div>
-
-        <!-- PRODUCTS -->
-        <div class="section">
-
-          <h3>Fruit Billing</h3>
-
-          <table class="fruit-table">
-
-            <tr>
-              <th>Fruit</th>
-              <th>Price (₹)</th>
-              <th>Quantity</th>
-            </tr>
-
-            {% for code, data in products.items() %}
-
-            <tr>
-
-              <td>{{ data.name }}</td>
-
-              <td>
-                ₹{{ "%.2f"|format(data.price) }}
-              </td>
-
-              <td>
+                <p>₹{{ item.price }}</p>
 
                 <input type="number"
                        name="qty_{{ code }}"
                        min="0"
-                       value="0">
+                       placeholder="Qty">
 
-              </td>
-
-            </tr>
+            </div>
 
             {% endfor %}
 
-          </table>
+        </div>
+
+        <button type="submit" class="checkout-btn">
+            Add To Cart
+        </button>
+
+    </form>
+
+    <div class="cart">
+
+        <h2>Cart</h2>
+
+        {% for item in cart_items %}
+
+        <div class="cart-item">
+
+            <p>{{ item.name }}</p>
+
+            <p>{{ item.quantity }}</p>
+
+            <p>₹{{ item.total }}</p>
 
         </div>
 
-        <button type="submit"
-                name="_form_type"
-                value="generate_bill"
-                class="btn-submit">
+        {% endfor %}
 
-          Generate Bill
+        <hr>
 
-        </button>
+        <h3>Subtotal: ₹{{ subtotal }}</h3>
 
-      </form>
+        <h3>GST: ₹{{ gst }}</h3>
 
-    {% endif %}
+        <h2>Total: ₹{{ final_amount }}</h2>
 
-  </div>
+        <a href="/payment">
+            <button class="pay-btn">
+                Proceed To Payment
+            </button>
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+}
+</script>
 
 </body>
 </html>

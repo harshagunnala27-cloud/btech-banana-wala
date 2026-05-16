@@ -1,121 +1,155 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, session
 from datetime import datetime
+import sqlite3
 import os
 
 app = Flask(__name__)
+app.secret_key = "banana_secret_key"
 
-# === Fruit products ===
+DATABASE = "store.db"
+
 PRODUCTS = {
-    "1": {"name": "Apple",      "price": 15.5},
-    "2": {"name": "Banana",     "price": 10.0},
-    "3": {"name": "Orange",     "price": 12.0},
-    "4": {"name": "Grapes",     "price": 20.0},
-    "5": {"name": "Watermelon", "price": 25.0},
-    "6": {"name": "Mango",      "price": 30.0},
-    "7": {"name": "Pineapple",  "price": 18.0},
-    "8": {"name": "Mango (Grade B)", "price": 22.0},
-    "9": {"name": "Strawberry", "price": 28.0},
-    "10": {"name": "Custard Apple", "price": 35.0},
+    "1": {"name": "Apple", "price": 15},
+    "2": {"name": "Banana", "price": 10},
+    "3": {"name": "Orange", "price": 12},
+    "4": {"name": "Grapes", "price": 20},
+    "5": {"name": "Mango", "price": 30},
+    "6": {"name": "Pineapple", "price": 18},
 }
 
 GST_RATE = 0.18
 
-BILLS_DIR = "bills"
-os.makedirs(BILLS_DIR, exist_ok=True)
+
+def init_db():
+    conn = sqlite3.connect(DATABASE)
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        password TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
 
 
-def save_bill_to_file(bill):
-    filename = f"{BILLS_DIR}/bill_{bill['timestamp'].replace(':', '-').replace(' ', '_')}.txt"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write("BTech Banana Wala - Fruit Supermarket\n")
-        f.write("=" * 50 + "\n")
-        f.write(f"Customer name  : {bill['name']}\n")
-        f.write(f"Mobile number  : {bill['contact']}\n")
-        f.write(f"Payment method : {bill['payment_method']}\n")
-        f.write(f"Date & time    : {bill['timestamp']}\n")
-        f.write("-" * 50 + "\n")
-        f.write("Item                Qty    Price     Total\n")
-        for item in bill["items"]:
-            left = item["name"]
-            qty = str(item["quantity"])
-            price = f"{item['price']:.2f}"
-            total = f"{item['total']:.2f}"
-            f.write(f"{left:<15} {qty:>4} {price:>8} {total:>8}\n")
-        f.write("-" * 50 + "\n")
-        f.write(f"{'Subtotal':<25} ₹{bill['subtotal']:.2f}\n")
-        f.write(f"{'GST (18%)':<25} ₹{bill['gst']:.2f}\n")
-        f.write(f"{'Final Amount':<25} ₹{bill['final_amount']:.2f}\n")
-        f.write("=" * 50 + "\n")
-        f.write("Thank you for shopping with BTech Banana Wala!\n")
-        f.write("Visit again!\n")
-    return filename
+init_db()
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    error = ""
-    bill = None
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect(DATABASE)
+        cur = conn.cursor()
+
+        cur.execute(
+            "SELECT * FROM users WHERE username=? AND password=?",
+            (username, password)
+        )
+
+        user = cur.fetchone()
+        conn.close()
+
+        if user:
+            session["user"] = username
+            return redirect("/home")
+
+    return render_template("login.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect(DATABASE)
+        cur = conn.cursor()
+
+        cur.execute(
+            "INSERT INTO users(username,password) VALUES(?,?)",
+            (username, password)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/")
+
+    return render_template("signup.html")
+
+
+@app.route("/home", methods=["GET", "POST"])
+def home():
+
+    if "cart" not in session:
+        session["cart"] = {}
+
+    payment_success = False
+    final_amount = 0
 
     if request.method == "POST":
-        try:
-            name = request.form.get("name", "").strip()
-            contact = request.form.get("contact", "").strip()
-            payment_method = request.form.get("payment_method", "cash")
 
-            if not name:
-                raise ValueError("Customer name is required.")
-            if not contact.isdigit() or len(contact) != 10:
-                raise ValueError("Please enter a valid 10‑digit mobile number.")
+        for code in PRODUCTS:
+            qty = request.form.get(f"qty_{code}")
 
-            cart = {}
-            subtotal = 0.0
+            if qty and int(qty) > 0:
+                session["cart"][code] = int(qty)
 
-            for code in PRODUCTS:
-                qty_str = request.form.get(f"qty_{code}")
-                if qty_str and qty_str.strip():
-                    qty = int(qty_str)
-                    if qty <= 0:
-                        continue
-                    cart[code] = {"quantity": qty}
-                    subtotal += PRODUCTS[code]["price"] * qty
+        session.modified = True
 
-            if not cart:
-                raise ValueError("Please add at least one fruit.")
+    cart_items = []
+    subtotal = 0
 
-            gst = subtotal * GST_RATE
-            final_amount = subtotal + gst
+    for code, qty in session["cart"].items():
+        product = PRODUCTS[code]
+        total = product["price"] * qty
 
-            timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        subtotal += total
 
-            bill = {
-                "name": name,
-                "contact": contact,
-                "items": [],
-                "subtotal": subtotal,
-                "gst": gst,
-                "final_amount": final_amount,
-                "payment_method": payment_method,
-                "timestamp": timestamp_str,
-            }
+        cart_items.append({
+            "name": product["name"],
+            "price": product["price"],
+            "quantity": qty,
+            "total": total
+        })
 
-            for code, data in cart.items():
-                qty = data["quantity"]
-                price = PRODUCTS[code]["price"]
-                total = price * qty
-                bill["items"].append({
-                    "name": PRODUCTS[code]["name"],
-                    "quantity": qty,
-                    "price": price,
-                    "total": total,
-                })
+    gst = subtotal * GST_RATE
+    final_amount = subtotal + gst
 
-            saved_file = save_bill_to_file(bill)
+    return render_template(
+        "index.html",
+        products=PRODUCTS,
+        cart_items=cart_items,
+        subtotal=subtotal,
+        gst=gst,
+        final_amount=final_amount,
+        payment_success=payment_success
+    )
 
-        except Exception as e:
-            error = str(e)
 
-    return render_template("index.html", products=PRODUCTS, error=error, bill=bill)
+@app.route("/payment")
+def payment():
+    return render_template("payment.html")
+
+
+@app.route("/success")
+def success():
+    session["cart"] = {}
+    return render_template("success.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(debug=True)
