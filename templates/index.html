@@ -1,366 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Btech Banana Wala</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:'Poppins',sans-serif;
-        }
-
-        body{
-            background:
-            linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.75)),
-            url('https://images.unsplash.com/photo-1619566636858-adf3ef46400b?q=80&w=1470&auto=format&fit=crop');
-            background-size:cover;
-            background-position:center;
-            min-height:100vh;
-            color:white;
-        }
-
-        .navbar{
-            width:100%;
-            padding:20px 8%;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            backdrop-filter:blur(15px);
-            background:rgba(255,255,255,0.08);
-            border-bottom:1px solid rgba(255,255,255,0.1);
-            position:sticky;
-            top:0;
-            z-index:1000;
-        }
-
-        .logo{
-            font-size:30px;
-            font-weight:700;
-            color:#ffd43b;
-        }
-
-        .logo span{
-            color:#51cf66;
-        }
-
-        .nav-btns{
-            display:flex;
-            gap:15px;
-        }
-
-        .nav-btns button{
-            padding:10px 22px;
-            border:none;
-            border-radius:30px;
-            cursor:pointer;
-            font-weight:600;
-            transition:0.3s;
-        }
-
-        .login-btn{
-            background:transparent;
-            border:2px solid #fff !important;
-            color:white;
-        }
-
-        .signup-btn{
-            background:#51cf66;
-            color:black;
-        }
-
-        .nav-btns button:hover{
-            transform:translateY(-3px);
-        }
-
-        .hero{
-            text-align:center;
-            padding:70px 20px 40px;
-        }
-
-        .hero h1{
-            font-size:65px;
-            font-weight:700;
-            margin-bottom:15px;
-        }
-
-        .hero h1 span{
-            color:#ffd43b;
-        }
-
-        .hero p{
-            color:#ddd;
-            font-size:18px;
-        }
-
-        .main-container{
-            width:90%;
-            max-width:1200px;
-            margin:auto;
-            margin-top:30px;
-            padding:40px;
-            border-radius:30px;
-            background:rgba(255,255,255,0.08);
-            backdrop-filter:blur(18px);
-            box-shadow:0 10px 40px rgba(0,0,0,0.4);
-        }
-
-        .top-stats{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:20px;
-            margin-bottom:40px;
-        }
-
-        .stat-card{
-            background:rgba(255,255,255,0.08);
-            padding:25px;
-            border-radius:20px;
-            transition:0.3s;
-        }
-
-        .stat-card:hover{
-            transform:translateY(-8px);
-            background:rgba(255,255,255,0.12);
-        }
-
-        .stat-card h2{
-            font-size:35px;
-            color:#ffd43b;
-        }
-
-        .products-title{
-            font-size:35px;
-            margin-bottom:30px;
-            color:#51cf66;
-        }
-
-        table{
-            width:100%;
-            border-collapse:collapse;
-            overflow:hidden;
-            border-radius:20px;
-        }
-
-        th{
-            background:#51cf66;
-            color:black;
-            padding:18px;
-            text-align:left;
-        }
-
-        td{
-            padding:20px;
-            border-bottom:1px solid rgba(255,255,255,0.1);
-        }
-
-        tr:hover{
-            background:rgba(255,255,255,0.05);
-        }
-
-        input[type="number"]{
-            width:80px;
-            padding:10px;
-            border:none;
-            border-radius:10px;
-            background:rgba(255,255,255,0.15);
-            color:white;
-            outline:none;
-        }
-
-        .generate-btn{
-            margin-top:35px;
-            width:100%;
-            padding:18px;
-            border:none;
-            border-radius:15px;
-            background:linear-gradient(45deg,#ffd43b,#51cf66);
-            color:black;
-            font-size:18px;
-            font-weight:700;
-            cursor:pointer;
-            transition:0.3s;
-        }
-
-        .generate-btn:hover{
-            transform:scale(1.02);
-        }
-
-        .bill-section{
-            margin-top:50px;
-            background:white;
-            color:black;
-            padding:35px;
-            border-radius:20px;
-        }
-
-        .bill-section h2{
-            margin-bottom:20px;
-        }
-
-        .footer{
-            text-align:center;
-            padding:40px;
-            color:#ccc;
-        }
-
-        @media(max-width:768px){
-
-            .hero h1{
-                font-size:42px;
-            }
-
-            .main-container{
-                padding:20px;
-            }
-
-            table{
-                font-size:14px;
-            }
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTech Banana Wala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
-
 <body>
 
-    <div class="navbar">
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
 
-        <div class="logo">
-            Btech <span>Banana Wala</span>
-        </div>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">🍌</div>
+    <div>
+      <h1>BTech Banana Wala</h1>
+      <p>Fresh fruits • Fast billing • Smart receipt</p>
+    </div>
+  </div>
 
-        <div class="nav-btns">
-            <button class="login-btn">Login</button>
-            <button class="signup-btn">Sign Up</button>
-        </div>
+  <div class="top-actions">
+    <div class="pill">Live Billing</div>
+    <div class="pill muted">Render Cloud</div>
+  </div>
+</header>
 
+<main class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <h2>Today’s Sales</h2>
+      <div class="mini-stat">
+        <span>Orders</span>
+        <strong>128</strong>
+      </div>
+      <div class="mini-stat">
+        <span>Revenue</span>
+        <strong>₹24,580</strong>
+      </div>
+      <div class="mini-stat">
+        <span>Top Fruit</span>
+        <strong>Mango</strong>
+      </div>
     </div>
 
-    <div class="hero">
-
-        <h1>Fresh Fruits <span>Delivered Smartly</span></h1>
-
-        <p>India's next-gen smart fruit billing experience.</p>
-
+    <div class="sidebar-card accent">
+      <h2>Quick Note</h2>
+      <p>Generate bills, print receipts, and keep the checkout flow clean and fast.</p>
     </div>
+  </aside>
 
-    <div class="main-container">
+  <section class="content">
+    {% if error %}
+      <div class="alert">{{ error }}</div>
+    {% endif %}
 
-        <div class="top-stats">
+    {% if bill %}
+      <section class="receipt-panel">
+        <div class="receipt-head">
+          <div>
+            <span class="section-kicker">Invoice</span>
+            <h2>Bill Receipt</h2>
+          </div>
+          <div class="receipt-badge">Completed</div>
+        </div>
 
-            <div class="stat-card">
-                <p>Today's Orders</p>
-                <h2>1,284</h2>
+        <div class="receipt-grid">
+          <div class="receipt-info">
+            <label>Customer</label>
+            <strong>{{ bill.name }}</strong>
+          </div>
+          <div class="receipt-info">
+            <label>Mobile</label>
+            <strong>{{ bill.contact }}</strong>
+          </div>
+          <div class="receipt-info">
+            <label>Payment</label>
+            <strong>{{ bill.payment_method }}</strong>
+          </div>
+          <div class="receipt-info">
+            <label>Date & Time</label>
+            <strong>{{ bill.timestamp }}</strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Fruit</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in bill["items"] %}
+              <tr>
+                <td>{{ item["name"] }}</td>
+                <td>{{ item["quantity"] }}</td>
+                <td>₹{{ "%.2f"|format(item["price"]) }}</td>
+                <td>₹{{ "%.2f"|format(item["total"]) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="totals">
+          <div><span>Subtotal</span><strong>₹{{ "%.2f"|format(bill.subtotal) }}</strong></div>
+          <div><span>GST (18%)</span><strong>₹{{ "%.2f"|format(bill.gst) }}</strong></div>
+          <div class="final"><span>Final Amount</span><strong>₹{{ "%.2f"|format(bill.final_amount) }}</strong></div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn primary" onclick="window.print()">Print Bill</button>
+          <a href="/" class="btn secondary">Create New Bill</a>
+        </div>
+      </section>
+    {% else %}
+      <form method="POST" class="billing-layout">
+        <section class="form-card hero-card">
+          <span class="section-kicker">Smart Checkout</span>
+          <h2>Fruit Billing Console</h2>
+          <p class="hero-text">A clean supermarket-style checkout experience with quick billing and sharp receipt generation.</p>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <span>Fresh Fruits</span>
+              <strong>10</strong>
             </div>
-
-            <div class="stat-card">
-                <p>Fresh Fruits</p>
-                <h2>50+</h2>
+            <div class="stat-box">
+              <span>GST</span>
+              <strong>18%</strong>
             </div>
-
-            <div class="stat-card">
-                <p>Happy Customers</p>
-                <h2>9.8K</h2>
+            <div class="stat-box">
+              <span>Status</span>
+              <strong>Ready</strong>
             </div>
+          </div>
+        </section>
 
+        <section class="form-card">
+          <div class="card-title">
+            <span class="section-kicker">Customer Desk</span>
+            <h3>Billing Details</h3>
+          </div>
+
+          <div class="grid-2">
+            <input type="text" name="name" placeholder="Customer name" required />
+            <input type="text" name="contact" placeholder="10-digit mobile number" required minlength="10" maxlength="10" />
+          </div>
+
+          <select name="payment_method" required>
+            <option value="">Select payment method</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+          </select>
+        </section>
+
+        <section class="form-card">
+          <div class="card-title">
+            <span class="section-kicker">Fruit Rack</span>
+            <h3>Select Quantity</h3>
+          </div>
+
+          <div class="product-grid">
+            {% for code, data in products.items() %}
+            <div class="product-card">
+              <div class="fruit-chip">🍍</div>
+              <div class="product-top">
+                <h4>{{ data.name }}</h4>
+                <span>₹{{ "%.2f"|format(data.price) }}</span>
+              </div>
+              <label>Qty</label>
+              <input type="number" name="qty_{{ code }}" min="0" value="0" />
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <div class="submit-row">
+          <button type="submit" class="btn primary big">Generate Bill</button>
         </div>
-
-        <h2 class="products-title">Fruit Billing Dashboard</h2>
-
-        <form method="POST">
-
-            <table>
-
-                <tr>
-                    <th>Fruit</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                </tr>
-
-                {% for code, data in products.items() %}
-
-                <tr>
-
-                    <td>{{ data.name }}</td>
-
-                    <td>₹{{ "%.2f"|format(data.price) }}</td>
-
-                    <td>
-                        <input type="number"
-                               name="qty_{{ code }}"
-                               min="0"
-                               value="0">
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            <button type="submit" class="generate-btn">
-                Generate Premium Bill
-            </button>
-
-        </form>
-
-        {% if bill %}
-
-        <div class="bill-section">
-
-            <h2>Customer Receipt</h2>
-
-            <p><strong>Customer:</strong> {{ bill.customer }}</p>
-            <p><strong>Date:</strong> {{ bill.date }}</p>
-
-            <br>
-
-            <table>
-
-                <tr>
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                </tr>
-
-                {% for item in bill["items"] %}
-
-                <tr>
-
-                    <td>{{ item["name"] }}</td>
-
-                    <td>{{ item["quantity"] }}</td>
-
-                    <td>₹{{ "%.2f"|format(item["total"]) }}</td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            <br>
-
-            <h3>Total Amount: ₹{{ "%.2f"|format(bill.total) }}</h3>
-
-        </div>
-
-        {% endif %}
-
-    </div>
-
-    <div class="footer">
-
-        © 2026 Btech Banana Wala • Smart Fruit Billing Platform
-
-    </div>
+      </form>
+    {% endif %}
+  </section>
+</main>
 
 </body>
 </html>
