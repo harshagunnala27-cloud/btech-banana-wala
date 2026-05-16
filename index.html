@@ -29,20 +29,20 @@
             <th>Price</th>
             <th>Total</th>
           </tr>
-          {% for item in bill.items() %}
-          <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>₹{{ "%.2f"|format(item.price) }}</td>
-            <td>₹{{ "%.2f"|format(item.total) }}</td>
-          </tr>
-          {% endfor %}
+          {% for item in bill["items"] %}
+<tr>
+  <td>{{ item["name"] }}</td>
+  <td>{{ item["quantity"] }}</td>
+  <td>₹{{ "%.2f"|format(item["price"]) }}</td>
+  <td>₹{{ "%.2f"|format(item["total"]) }}</td>
+</tr>
+{% endfor %}
         </table>
 
         <div class="bill-total">
-          <p><strong>Subtotal:</strong> ₹{{ "%.2f"|format(bill.subtotal) }}</p>
-          <p><strong>GST (18%):</strong> ₹{{ "%.2f"|format(bill.gst) }}</p>
-          <p><strong class="final">Final Amount: ₹{{ "%.2f"|format(bill.final_amount) }}</strong></p>
+          <p><strong>Subtotal:</strong> ₹{{ "%.2f"|format(bill["subtotal"]) }}</p>
+          <p><strong>GST (18%):</strong> ₹{{ "%.2f"|format(bill["gst"]) }}</p>
+          <p><strong class="final">Final Amount: ₹{{ "%.2f"|format(bill["final_amount"]) }}</strong></p>
         </div>
 
         <p class="thank-you">Thank you for shopping with us! Visit again at BTech Banana Wala.</p>
