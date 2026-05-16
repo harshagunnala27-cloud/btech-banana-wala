@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BTech Banana Wala – Fruit Supermarket Billing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="header">BTech Banana Wala</h1>
+    <p class="sub-header">Fresh Fruits Supermarket Billing System</p>
+
+    {% if error %}
+      <div class="alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if bill %}
+      <div class="receipt" id="print-bill">
+        <h2 class="receipt-title">BILL RECEIPT</h2>
+        <p><strong>Customer:</strong> {{ bill.name }}</p>
+        <p><strong>Mobile:</strong> {{ bill.contact }}</p>
+        <p><strong>Payment:</strong> {{ bill.payment_method }}</p>
+        <p><strong>Date & Time:</strong> {{ bill.timestamp }}</p>
+
+        <table class="bill-table">
+          <tr>
+            <th>Fruit</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+          {% for item in bill.items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ "%.2f"|format(item.price) }}</td>
+            <td>₹{{ "%.2f"|format(item.total) }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+
+        <div class="bill-total">
+          <p><strong>Subtotal:</strong> ₹{{ "%.2f"|format(bill.subtotal) }}</p>
+          <p><strong>GST (18%):</strong> ₹{{ "%.2f"|format(bill.gst) }}</p>
+          <p><strong class="final">Final Amount: ₹{{ "%.2f"|format(bill.final_amount) }}</strong></p>
+        </div>
+
+        <p class="thank-you">Thank you for shopping with us! Visit again at BTech Banana Wala.</p>
+      </div>
+
+      <div class="actions">
+        <button type="button" onclick="window.print()" class="btn-print">Print Bill</button>
+        <a href="/" class="btn-new">New Bill</a>
+      </div>
+
+    {% else %}
+      <form method="POST">
+        <div class="section">
+          <h3>Customer Details</h3>
+          <input type="text" name="name" placeholder="Enter customer name" required />
+          <input type="text" name="contact" placeholder="Enter 10‑digit mobile number" required minlength="10" maxlength="10" />
+
+          <select name="payment_method" required>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h3>Fruit Billing</h3>
+          <table class="fruit-table">
+            <tr>
+              <th>Fruit</th>
+              <th>Price (₹)</th>
+              <th>Quantity</th>
+            </tr>
+            {% for code, data in products.items() %}
+            <tr>
+              <td>{{ data.name }}</td>
+              <td>₹{{ "%.2f"|format(data.price) }}</td>
+              <td>
+                <input type="number" name="qty_{{ code }}" min="0" value="0" />
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+        <button type="submit" class="btn-submit">Generate Bill</button>
+      </form>
+    {% endif %}
+  </div>
+</body>
+</html>
