@@ -1,195 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BTech Banana Wala</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
+<div class="background-glow"></div>
 
 <header class="topbar">
+
   <div class="brand">
-    <div class="brand-logo">🍌</div>
+    <div class="logo">🍌</div>
+
     <div>
       <h1>BTech Banana Wala</h1>
-      <p>Fresh fruits • Fast billing • Smart receipt</p>
+      <p>Smart Fruit Billing Platform</p>
     </div>
   </div>
 
-  <div class="top-actions">
-    <div class="pill">Live Billing</div>
-    <div class="pill muted">Render Cloud</div>
+  <div class="header-badges">
+    <span>Live Billing</span>
+    <span>Cloud Hosted</span>
   </div>
+
 </header>
 
-<main class="shell">
-  <aside class="sidebar">
-    <div class="sidebar-card">
-      <h2>Today’s Sales</h2>
-      <div class="mini-stat">
-        <span>Orders</span>
-        <strong>128</strong>
+<main class="container">
+
+  {% if error %}
+  <div class="error-box">
+    {{ error }}
+  </div>
+  {% endif %}
+
+  {% if bill %}
+
+  <section class="receipt-card">
+
+    <div class="receipt-header">
+      <div>
+        <p class="tag">Invoice Generated</p>
+        <h2>Payment Successful</h2>
       </div>
-      <div class="mini-stat">
-        <span>Revenue</span>
-        <strong>₹24,580</strong>
-      </div>
-      <div class="mini-stat">
-        <span>Top Fruit</span>
-        <strong>Mango</strong>
-      </div>
+
+      <button onclick="window.print()" class="print-btn">
+        Print Bill
+      </button>
     </div>
 
-    <div class="sidebar-card accent">
-      <h2>Quick Note</h2>
-      <p>Generate bills, print receipts, and keep the checkout flow clean and fast.</p>
+    <div class="customer-grid">
+
+      <div class="info-box">
+        <label>Customer</label>
+        <h3>{{ bill.name }}</h3>
+      </div>
+
+      <div class="info-box">
+        <label>Mobile</label>
+        <h3>{{ bill.contact }}</h3>
+      </div>
+
+      <div class="info-box">
+        <label>Payment</label>
+        <h3>{{ bill.payment_method }}</h3>
+      </div>
+
+      <div class="info-box">
+        <label>Date & Time</label>
+        <h3>{{ bill.timestamp }}</h3>
+      </div>
+
     </div>
-  </aside>
 
-  <section class="content">
-    {% if error %}
-      <div class="alert">{{ error }}</div>
-    {% endif %}
+    <table class="bill-table">
 
-    {% if bill %}
-      <section class="receipt-panel">
-        <div class="receipt-head">
-          <div>
-            <span class="section-kicker">Invoice</span>
-            <h2>Bill Receipt</h2>
-          </div>
-          <div class="receipt-badge">Completed</div>
-        </div>
+      <tr>
+        <th>Fruit</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
 
-        <div class="receipt-grid">
-          <div class="receipt-info">
-            <label>Customer</label>
-            <strong>{{ bill.name }}</strong>
-          </div>
-          <div class="receipt-info">
-            <label>Mobile</label>
-            <strong>{{ bill.contact }}</strong>
-          </div>
-          <div class="receipt-info">
-            <label>Payment</label>
-            <strong>{{ bill.payment_method }}</strong>
-          </div>
-          <div class="receipt-info">
-            <label>Date & Time</label>
-            <strong>{{ bill.timestamp }}</strong>
-          </div>
-        </div>
+      {% for item in bill["items"] %}
 
-        <div class="table-wrap">
-          <table class="receipt-table">
-            <thead>
-              <tr>
-                <th>Fruit</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in bill["items"] %}
-              <tr>
-                <td>{{ item["name"] }}</td>
-                <td>{{ item["quantity"] }}</td>
-                <td>₹{{ "%.2f"|format(item["price"]) }}</td>
-                <td>₹{{ "%.2f"|format(item["total"]) }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <tr>
+        <td>{{ item["name"] }}</td>
+        <td>{{ item["quantity"] }}</td>
+        <td>₹{{ "%.2f"|format(item["price"]) }}</td>
+        <td>₹{{ "%.2f"|format(item["total"]) }}</td>
+      </tr>
 
-        <div class="totals">
-          <div><span>Subtotal</span><strong>₹{{ "%.2f"|format(bill.subtotal) }}</strong></div>
-          <div><span>GST (18%)</span><strong>₹{{ "%.2f"|format(bill.gst) }}</strong></div>
-          <div class="final"><span>Final Amount</span><strong>₹{{ "%.2f"|format(bill.final_amount) }}</strong></div>
-        </div>
+      {% endfor %}
 
-        <div class="actions">
-          <button type="button" class="btn primary" onclick="window.print()">Print Bill</button>
-          <a href="/" class="btn secondary">Create New Bill</a>
-        </div>
-      </section>
-    {% else %}
-      <form method="POST" class="billing-layout">
-        <section class="form-card hero-card">
-          <span class="section-kicker">Smart Checkout</span>
-          <h2>Fruit Billing Console</h2>
-          <p class="hero-text">A clean supermarket-style checkout experience with quick billing and sharp receipt generation.</p>
+    </table>
 
-          <div class="stats-row">
-            <div class="stat-box">
-              <span>Fresh Fruits</span>
-              <strong>10</strong>
-            </div>
-            <div class="stat-box">
-              <span>GST</span>
-              <strong>18%</strong>
-            </div>
-            <div class="stat-box">
-              <span>Status</span>
-              <strong>Ready</strong>
-            </div>
-          </div>
-        </section>
+    <div class="total-section">
 
-        <section class="form-card">
-          <div class="card-title">
-            <span class="section-kicker">Customer Desk</span>
-            <h3>Billing Details</h3>
-          </div>
+      <div class="total-row">
+        <span>Subtotal</span>
+        <strong>₹{{ "%.2f"|format(bill.subtotal) }}</strong>
+      </div>
 
-          <div class="grid-2">
-            <input type="text" name="name" placeholder="Customer name" required />
-            <input type="text" name="contact" placeholder="10-digit mobile number" required minlength="10" maxlength="10" />
-          </div>
+      <div class="total-row">
+        <span>GST (18%)</span>
+        <strong>₹{{ "%.2f"|format(bill.gst) }}</strong>
+      </div>
 
-          <select name="payment_method" required>
-            <option value="">Select payment method</option>
-            <option value="cash">Cash</option>
-            <option value="card">Card</option>
-            <option value="upi">UPI</option>
-          </select>
-        </section>
+      <div class="total-row final-total">
+        <span>Final Amount</span>
+        <strong>₹{{ "%.2f"|format(bill.final_amount) }}</strong>
+      </div>
 
-        <section class="form-card">
-          <div class="card-title">
-            <span class="section-kicker">Fruit Rack</span>
-            <h3>Select Quantity</h3>
-          </div>
+    </div>
 
-          <div class="product-grid">
-            {% for code, data in products.items() %}
-            <div class="product-card">
-              <div class="fruit-chip">🍍</div>
-              <div class="product-top">
-                <h4>{{ data.name }}</h4>
-                <span>₹{{ "%.2f"|format(data.price) }}</span>
-              </div>
-              <label>Qty</label>
-              <input type="number" name="qty_{{ code }}" min="0" value="0" />
-            </div>
-            {% endfor %}
-          </div>
-        </section>
+    <a href="/" class="new-bill-btn">
+      Create New Bill
+    </a>
 
-        <div class="submit-row">
-          <button type="submit" class="btn primary big">Generate Bill</button>
-        </div>
-      </form>
-    {% endif %}
   </section>
+
+  {% else %}
+
+  <form method="POST" class="billing-form">
+
+    <section class="hero-card">
+
+      <div>
+        <p class="tag">Smart Checkout</p>
+        <h2>Premium Fruit Billing Experience</h2>
+
+        <p class="hero-text">
+          Modern supermarket billing platform with live checkout,
+          dynamic pricing and elegant receipt generation.
+        </p>
+      </div>
+
+    </section>
+
+    <section class="form-card">
+
+      <div class="section-title">
+        <p class="tag">Customer Desk</p>
+        <h3>Customer Details</h3>
+      </div>
+
+      <div class="input-grid">
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Customer Name"
+          required
+        >
+
+        <input
+          type="text"
+          name="contact"
+          placeholder="10-digit Mobile Number"
+          minlength="10"
+          maxlength="10"
+          required
+        >
+
+      </div>
+
+      <select name="payment_method" required>
+        <option value="">Select Payment Method</option>
+        <option value="cash">Cash</option>
+        <option value="card">Card</option>
+        <option value="upi">UPI</option>
+      </select>
+
+    </section>
+
+    <section class="form-card">
+
+      <div class="section-title">
+        <p class="tag">Fruit Collection</p>
+        <h3>Select Fruits</h3>
+      </div>
+
+      <div class="product-grid">
+
+        {% for code, data in products.items() %}
+
+        <div class="product-card">
+
+          <div class="fruit-icon">🍍</div>
+
+          <div class="product-top">
+            <h4>{{ data.name }}</h4>
+            <span>₹{{ "%.2f"|format(data.price) }}</span>
+          </div>
+
+          <label>Quantity</label>
+
+          <input
+            type="number"
+            name="qty_{{ code }}"
+            min="0"
+            value="0"
+          >
+
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+    </section>
+
+    <button type="submit" class="generate-btn">
+      Generate Smart Bill
+    </button>
+
+  </form>
+
+  {% endif %}
+
 </main>
 
 </body>
