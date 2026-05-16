@@ -2,19 +2,48 @@
 <html>
 <head>
     <title>Payment</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <div class="payment-box">
 
-    <h1>Payment Simulation 💳</h1>
+    <h1>💳 Payment Section</h1>
 
     <p>Select Payment Method</p>
 
-    <button onclick="window.location.href='/success'">
-        Pay Now
-    </button>
+    <div class="payment-methods">
+
+        <button>UPI</button>
+
+        <button>Card</button>
+
+        <button>Cash</button>
+
+    </div>
+
+    <br>
+
+    <a href="/download-bill">
+
+        <button class="btn-download">
+            Download Bill
+        </button>
+
+    </a>
+
+    <br><br>
+
+    <a href="/success">
+
+        <button class="btn-pay">
+            Complete Payment
+        </button>
+
+    </a>
 
 </div>
 

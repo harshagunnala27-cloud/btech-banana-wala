@@ -149,6 +149,57 @@ def success():
 def logout():
     session.clear()
     return redirect("/")
+@app.route("/download-bill")
+
+def download_bill():
+
+    if "cart" not in session:
+        return "No bill available"
+
+    filename = "bill.txt"
+
+    subtotal = 0
+
+    lines = []
+
+    lines.append("BTech Banana Wala")
+    lines.append("=" * 40)
+
+    for code, qty in session["cart"].items():
+
+        product = PRODUCTS[code]
+
+        total = product["price"] * qty
+
+        subtotal += total
+
+        lines.append(
+            f"{product['name']}  x{qty} = ₹{total}"
+        )
+
+    gst = subtotal * GST_RATE
+
+    final_amount = subtotal + gst
+
+    lines.append("-" * 40)
+    lines.append(f"Subtotal: ₹{subtotal}")
+    lines.append(f"GST: ₹{gst}")
+    lines.append(f"Final Amount: ₹{final_amount}")
+
+    lines.append("=" * 40)
+
+    lines.append("Thank You Visit Again")
+
+    with open(filename, "w") as f:
+
+        for line in lines:
+
+            f.write(line + "\n")
+
+    return send_file(
+        filename,
+        as_attachment=True
+    )
 
 
 if __name__ == "__main__":
