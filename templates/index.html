@@ -47,7 +47,7 @@
             <th>Price</th>
             <th>Total</th>
           </tr>
-          {% for item in bill.items %}
+          {% for item in bill["items"] %}
           <tr>
             <td>{{ item["name"] }}</td>
             <td>{{ item["quantity"] }}</td>
